@@ -59,6 +59,7 @@ export class ShapeModel extends Model {
             });
 
         Object.assign(params, this.getPath(params));
+        Object.assign(params, this.getBurst(params));
 
         this.params = params;
         return params;
@@ -72,8 +73,8 @@ export class ShapeModel extends Model {
         return this.params.shape;
     }
 
-    getPath({ sides, radius }) {
-        if (!sides) return [];
+    getPath({ type, sides, radius }) {
+        if (type !== 'polygon') return {};
 
         const path = [];
         let step   = (Math.PI * 2) / sides;
@@ -86,6 +87,45 @@ export class ShapeModel extends Model {
             dx = Math.cos(start + (step * n)) * radius;
             dy = -Math.sin(start + (step * n)) * radius;
             path.push(new PIXI.Point(dx, dy));
+        }
+
+        return { path };
+    }
+
+    getBurst({ type, sides, innerRadius, outerRadius }) {
+        if (type !== 'random') return {};
+
+        const path = [];
+
+        let step     = (Math.PI * 2) / sides;
+        let halfStep = step / 2;
+        let qtrStep  = step / 4;
+        let n, dx, dy, cx, cy;
+
+        path.push({
+            type: 'normal',
+            dx  : (Math.cos(0) * outerRadius),
+            dy  : -(Math.sin(0) * outerRadius),
+        });
+
+        for (n = 1; n <= sides; ++n) {
+            cx = Math.cos((step * n) - (qtrStep * 3)) * (innerRadius / Math.cos(qtrStep));
+            cy = -Math.sin((step * n) - (qtrStep * 3)) * (innerRadius / Math.cos(qtrStep));
+            dx = Math.cos((step * n) - halfStep) * innerRadius;
+            dy = -Math.sin((step * n) - halfStep) * innerRadius;
+            path.push({
+                type: 'curve',
+                cx, cy, dx, dy,
+            });
+
+            cx = Math.cos((step * n) - qtrStep) * (innerRadius / Math.cos(qtrStep));
+            cy = -Math.sin((step * n) - qtrStep) * (innerRadius / Math.cos(qtrStep));
+            dx = Math.cos((step * n)) * outerRadius;
+            dy = -Math.sin((step * n)) * outerRadius;
+            path.push({
+                type: 'curve',
+                cx, cy, dx, dy,
+            });
         }
 
         return { path };

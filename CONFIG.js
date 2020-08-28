@@ -49,7 +49,15 @@ export const CONFIG = {
                 'width' : { 'min': 40, 'max': 100 },
                 'height': { 'min': 40, 'max': 100 }
             },
-        }
+        },
+        'random': {
+            'type': 'random',
+            'attributes': {
+                'sides' : { 'min': 5, 'max': 10 },
+                'innerRadius' : { 'min': 20, 'max': 100 },
+                'outerRadius': { 'min': 30, 'max': 100 },
+            },
+        },
     },
 
 

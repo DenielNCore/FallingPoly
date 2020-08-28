@@ -44,9 +44,21 @@ export class ShapeView extends View {
             case 'rect' :
                 graphics.drawRect(0, 0, width, height);
                 break;
+            case 'random' :
+                this.drawRandom(graphics, path);
+                break;
             default:
                 throw new Error('No shape TYPE generated!!');
         }
+    }
+
+    drawRandom(graphics, path) {
+        path.forEach(point => {
+            const { type, cx, cy, dx, dy } = point;
+
+            if (type === 'normal') graphics.moveTo(dx, dy);
+            if (type === 'curve') graphics.quadraticCurveTo(cx, cy, dx, dy);
+        });
     }
 
     createGraphics(params) {
