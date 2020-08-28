@@ -6,8 +6,10 @@ export class ShapeController extends Controller {
         this.model = model;
         this.view  = view;
 
-        this.view.onPointerDown = () => {
+        this.view.onPointerDown = (e) => {
+            e.stopPropagation();
             this.view.emit('change', this.model.shapeType);
+            this.view.emit('destroy', this.registerIndex);
         };
 
         view.init(this.model.params);
@@ -20,6 +22,10 @@ export class ShapeController extends Controller {
     fall(speed) {
         this.view.y += speed;
         if (this.view.y >= this.model.fallLimit) this.view.emit('destroy', this.registerIndex);
+    }
+
+    setPosition(pos) {
+        this.view.position = pos;
     }
 
     on(...args) {

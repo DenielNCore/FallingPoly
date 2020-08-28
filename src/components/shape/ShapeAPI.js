@@ -5,6 +5,9 @@ export class ShapeAPI extends Component {
     fall(gravity) {
         this.controller.fall(gravity);
     }
+    setPosition(pos) {
+        this.controller.setPosition(pos);
+    }
 
     on(...args) {
         this.controller.on(...args);

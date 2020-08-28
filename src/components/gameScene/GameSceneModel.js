@@ -14,6 +14,8 @@ export class GameSceneModel extends Model {
             ...CONFIG.parentGroups,
         ];
 
+        this.screenParams = Object.assign({}, CONFIG.size);
+
         this.#sqrt = 0;
 
         this.spawnFrequency = Object.assign({}, CONFIG.spawnFrequency);
@@ -31,5 +33,12 @@ export class GameSceneModel extends Model {
 
     set sqrt(sqrt) {
         this.#sqrt = sqrt.toFixed(2);
+    }
+
+    getHitAreaParams() {
+        return {
+            ...this.screenParams,
+            type: 'rect',
+        };
     }
 }

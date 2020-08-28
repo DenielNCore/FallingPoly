@@ -22,8 +22,16 @@ export class GameSceneController extends Controller {
 
         this.createParentGroups();
 
-        this.changeColors = this.changeColors.bind(this);
-        this.removeShape  = this.removeShape.bind(this);
+        this.changeColors  = this.changeColors.bind(this);
+        this.removeShape   = this.removeShape.bind(this);
+        this.onPointerDown = this.onPointerDown.bind(this);
+
+        this.initInteractionArea();
+    }
+
+    initInteractionArea() {
+        this.view.setHitArea(this.model.getHitAreaParams());
+        this.view.on('pointerdown', this.onPointerDown);
     }
 
     initUI(ui) {
@@ -37,6 +45,12 @@ export class GameSceneController extends Controller {
 
         this.updateSpawnValue();
         this.updateSpeedValue();
+    }
+
+    onPointerDown(e) {
+        const loc = e.data.getLocalPosition(this.view);
+
+        this.createShape(loc);
     }
 
     updateTotalCount() {
@@ -96,6 +110,7 @@ export class GameSceneController extends Controller {
             const container       = new View();
             container.zIndex      = group.zIndex;
             container.parentGroup = group.name;
+
             this.rootElement.addChild(container);
         });
     }
@@ -112,13 +127,18 @@ export class GameSceneController extends Controller {
         return this.view;
     }
 
-    createShape() {
+    generateShapes() {
         for (let i = 0; i < this.model.spawnFrequency.current; i++) {
-            const component = Factory.createComponent({ ID: 'shape', 'parentGroup': 'MAIN' });
-            component.on('change', this.changeColors);
-            component.on('destroy', this.removeShape);
-            this.shapes.push(component);
+            this.createShape();
         }
+    }
+
+    createShape(pos) {
+        const component = Factory.createComponent({ ID: 'shape', 'parentGroup': 'MAIN' });
+        component.on('change', this.changeColors);
+        component.on('destroy', this.removeShape);
+        if(pos) component.setPosition(pos);
+        this.shapes.push(component);
     }
 
     changeColors(type) {
@@ -166,7 +186,7 @@ export class GameSceneController extends Controller {
             this.time += delta;
         } else {
             this.time -= this.timeLimit;
-            this.createShape();
+            this.generateShapes();
         }
     }
 
